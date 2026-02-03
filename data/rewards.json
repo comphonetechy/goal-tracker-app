@@ -1,0 +1,109 @@
+{
+  "points": 0,
+  "badges": [
+    "centurion"
+  ],
+  "unlockedRewards": [],
+  "rewardPool": {
+    "messages": [
+      "🎉 Awesome work! You're crushing it!",
+      "💪 You're unstoppable today!",
+      "🌟 Legend! Keep the momentum going!",
+      "🚀 To the moon! Amazing progress!",
+      "🔥 On fire! Nothing can stop you now!",
+      "⚡ Electric performance! Keep it up!",
+      "🎯 Bullseye! You nailed it!",
+      "👑 Royalty! You deserve this win!",
+      "🏆 Champion mindset activated!",
+      "✨ Magic! You make it look easy!"
+    ],
+    "badges": [
+      {
+        "id": "first-win",
+        "name": "First Victory",
+        "icon": "🥇",
+        "description": "Complete your first task"
+      },
+      {
+        "id": "streak-3",
+        "name": "3-Day Streak",
+        "icon": "🔥",
+        "description": "Complete tasks for 3 days in a row"
+      },
+      {
+        "id": "perfectionist",
+        "name": "Perfectionist",
+        "icon": "💎",
+        "description": "Complete 10 tasks at 100%"
+      },
+      {
+        "id": "early-bird",
+        "name": "Early Bird",
+        "icon": "🌅",
+        "description": "Complete a task before 9 AM"
+      },
+      {
+        "id": "night-owl",
+        "name": "Night Owl",
+        "icon": "🦉",
+        "description": "Complete a task after 9 PM"
+      },
+      {
+        "id": "speed-demon",
+        "name": "Speed Demon",
+        "icon": "⚡",
+        "description": "Complete 5 tasks in one day"
+      },
+      {
+        "id": "marathon",
+        "name": "Marathon Runner",
+        "icon": "🏃",
+        "description": "Complete 50 tasks total"
+      },
+      {
+        "id": "centurion",
+        "name": "Centurion",
+        "icon": "💯",
+        "description": "Reach 100 total points"
+      }
+    ],
+    "unlockables": [
+      {
+        "id": "theme-1",
+        "name": "Dark Mode",
+        "icon": "🌙",
+        "type": "theme"
+      },
+      {
+        "id": "theme-2",
+        "name": "Ocean Theme",
+        "icon": "🌊",
+        "type": "theme"
+      },
+      {
+        "id": "theme-3",
+        "name": "Forest Theme",
+        "icon": "🌲",
+        "type": "theme"
+      },
+      {
+        "id": "avatar-1",
+        "name": "Rocket Avatar",
+        "icon": "🚀",
+        "type": "avatar"
+      },
+      {
+        "id": "avatar-2",
+        "name": "Star Avatar",
+        "icon": "⭐",
+        "type": "avatar"
+      },
+      {
+        "id": "title-1",
+        "name": "Goal Crusher",
+        "icon": "💪",
+        "type": "title"
+      }
+    ]
+  }
+}

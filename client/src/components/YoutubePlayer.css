@@ -1,0 +1,227 @@
+/* wrapper */
+.ytWrap {
+  display: grid;
+  gap: 10px;
+  max-width: 820px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* controls row */
+.ytControls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ytInput {
+  flex: 1;
+  min-width: 260px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+}
+
+.ytInput:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.ytBtn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ytBtn:hover {
+  background: #f9fafb;
+}
+
+.ytBtnPrimary {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+/* layout: TV + list */
+.ytLayout {
+  display: grid;
+  grid-template-columns: 500px 1fr; /* TV fixed 500px */
+  gap: 10px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .ytLayout {
+    grid-template-columns: 1fr; /* stack on smaller screens */
+  }
+}
+
+/* TV box */
+.ytTV {
+  width: 500px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #0b1220;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .ytTV {
+    width: 100%;
+  }
+}
+
+.ytTVHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #111827, #0b1220);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.red { background: #ef4444; }
+.yellow { background: #f59e0b; }
+.green { background: #22c55e; }
+
+.ytTVTitle {
+  margin-left: 6px;
+  color: #cbd5e1;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.ytTVScreen {
+  padding: 10px;
+  background: #0b1220;
+}
+
+.ytEmpty {
+  height: 280px;
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+  font-size: 14px;
+  border: 1px dashed rgba(148, 163, 184, 0.25);
+  border-radius: 12px;
+}
+
+/* playlist panel */
+.ytListPanel {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  overflow: hidden;
+  min-width: 240px;
+}
+
+.ytListHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.ytListTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: #111827;
+}
+
+.ytListCount {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+/* scroll area for long lists */
+.ytListScroll {
+  max-height: 320px; /* ✅ long list becomes scrollable */
+  overflow: auto;
+  padding: 8px;
+}
+
+/* optional slim scrollbar */
+.ytListScroll::-webkit-scrollbar {
+  width: 8px;
+}
+.ytListScroll::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+.ytListScroll::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.ytListEmpty {
+  color: #6b7280;
+  font-size: 12px;
+  padding: 10px;
+}
+
+/* playlist item */
+.ytListItem {
+  display: grid;
+  grid-template-columns: 26px 1fr 26px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #eef2f7;
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+.ytListItem.active {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.ytListPlay,
+.ytListDel {
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ytListPlay:hover { background: #f9fafb; }
+.ytListDel:hover { background: #fef2f2; border-color: #fecaca; }
+
+.ytListText {
+  min-width: 0; /* enables text truncation */
+}
+
+.ytListName {
+  font-weight: 600;
+  font-size: 12px;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ytListUrl {
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuestFlow - App Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #131a2e;
+            --bg-card: #1a2642;
+            --accent-cyan: #00f0ff;
+            --accent-magenta: #ff00e5;
+            --accent-yellow: #ffeb3b;
+            --accent-green: #00ff88;
+            --text-primary: #ffffff;
+            --text-secondary: #8b9dc3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 229, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-magenta) 50%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 38, 66, 0.6) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .feature-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .preview-section {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 38, 66, 0.6) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .preview-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+        
+        .calendar-demo {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .day-cell {
+            aspect-ratio: 1;
+            background: rgba(19, 26, 46, 0.5);
+            border-radius: 8px;
+            border: 2px solid rgba(0, 240, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+        
+        .day-cell.active {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.3), rgba(255, 0, 229, 0.3));
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+        
+        .task-demo {
+            background: rgba(19, 26, 46, 0.8);
+            border: 2px solid var(--accent-cyan);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .task-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .progress-bar-demo {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            width: 75%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-card {
+            background: rgba(19, 26, 46, 0.8);
+            border: 2px solid rgba(0, 240, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            color: var(--bg-primary);
+            padding: 1.5rem 3rem;
+            border-radius: 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 240, 255, 0.7);
+        }
+        
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .tech-badge {
+            background: rgba(0, 240, 255, 0.1);
+            border: 2px solid var(--accent-cyan);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ QUESTFLOW</h1>
+            <p class="tagline">Level Up Your Life, One Quest at a Time</p>
+        </div>
+
+        <div class="demo-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📅</span>
+                <h3>Interactive Calendar</h3>
+                <p>Navigate through months with a sleek, futuristic interface. See your progress at a glance with visual indicators.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">⏱️</span>
+                <h3>Smart Timer System</h3>
+                <p>Set estimated time for each quest. Start, pause, and track your work sessions with real-time elapsed time display!</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🔊</span>
+                <h3>Sound Effects</h3>
+                <p>Immersive audio feedback! Hear start beeps, pause tones, minute ticks, and victory chimes when you complete quests.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🎁</span>
+                <h3>Random Rewards</h3>
+                <p>Earn points, unlock badges, and receive motivational messages when you complete quests. Stay motivated!</p>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>📅 Calendar View</h2>
+            <div class="calendar-demo">
+                <div class="day-cell">1</div>
+                <div class="day-cell">2</div>
+                <div class="day-cell active">3</div>
+                <div class="day-cell">4</div>
+                <div class="day-cell">5</div>
+                <div class="day-cell">6</div>
+                <div class="day-cell">7</div>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>⏱️ Timer-Based Tracking</h2>
+            <div style="text-align: center; padding: 2rem; background: rgba(0,0,0,0.3); border-radius: 12px; margin-top: 1rem;">
+                <div style="font-family: 'Orbitron'; font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;">
+                    23:45
+                </div>
+                <div style="color: var(--accent-green); font-family: 'Orbitron'; font-size: 0.75rem; margin-bottom: 1rem;">
+                    ⚡ ACTIVE
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #ffeb3b, #ffd700); border: 2px solid #ffeb3b; border-radius: 10px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer;">
+                        ⏸️ PAUSE
+                    </button>
+                    <button style="padding: 0.75rem 1.5rem; background: rgba(255, 0, 0, 0.2); border: 2px solid #ff4444; color: #ff4444; border-radius: 10px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer;">
+                        🔄 RESET
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>🎯 Quest Tracking</h2>
+            <div class="task-demo">
+                <div class="task-title">🏃 Complete React Tutorial - Learning</div>
+                <div class="progress-bar-demo">
+                    <div class="progress-fill">75%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>📊 Your Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-value">450</div>
+                    <div class="stat-label">Power Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Quests Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏅</div>
+                    <div class="stat-value">5/8</div>
+                    <div class="stat-label">Badges Earned</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2 style="font-family: 'Orbitron'; color: var(--accent-cyan); margin-bottom: 1rem;">
+                Ready to Start Your Journey?
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem;">
+                Follow the README instructions to install and launch QuestFlow!
+            </p>
+            
+            <div class="tech-stack">
+                <div class="tech-badge">⚛️ React 18</div>
+                <div class="tech-badge">⚡ Vite</div>
+                <div class="tech-badge">🚀 Express</div>
+                <div class="tech-badge">🎨 Framer Motion</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

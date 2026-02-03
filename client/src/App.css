@@ -1,0 +1,211 @@
+.app {
+  min-height: 100vh;
+  padding: 2rem;
+  position: relative;
+}
+
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.loading-spinner {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 20px var(--accent-cyan));
+}
+
+.loading-screen p {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  color: var(--accent-cyan);
+  letter-spacing: 2px;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.logo-section {
+  display: inline-block;
+  position: relative;
+}
+
+.app-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  margin: 0;
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-magenta) 50%, var(--accent-yellow) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
+}
+
+.app-title::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
+  filter: blur(20px);
+  z-index: -1;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.title-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 20px var(--accent-cyan));
+  animation: rotate 20s linear infinite;
+}
+
+.app-tagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.calendar-section,
+.tasks-section {
+  min-height: 600px;
+}
+
+.app-footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  border-top: 2px solid rgba(0, 240, 255, 0.1);
+}
+
+.app-footer p {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+
+  .app-title {
+    font-size: 3rem;
+    letter-spacing: 4px;
+  }
+
+  .title-icon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+
+  .app-header {
+    margin-bottom: 2rem;
+  }
+
+  .app-title {
+    font-size: 2rem;
+    letter-spacing: 2px;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .title-icon {
+    font-size: 2rem;
+  }
+
+  .app-tagline {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  .main-content {
+    gap: 1.5rem;
+  }
+
+  .calendar-section,
+  .tasks-section {
+    min-height: auto;
+  }
+}
+
+/* Custom animations for fun effects */
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Scrollbar for the app */
+.app::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+.app::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-cyan), var(--accent-magenta));
+  border-radius: 5px;
+}
+
+/* Glow effects on hover for interactive elements */
+button, .calendar-day, .task-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
