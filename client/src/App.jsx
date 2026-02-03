@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Calendar from './components/Calendar';
-import TaskPanel from './components/TaskPanel';
+import Calendar from './components/Calendar.jsx';
+import TaskPanel from './components/TaskPanel.jsx';
 import Stats from './components/Stats';
-import YouTubePlayer from './components/YoutubePlayer';
+import YouTubePlayer from './components/YoutubePlayer.jsx';
 import './App.css';
 
 const API_BASE = 'http://localhost:3001/api';

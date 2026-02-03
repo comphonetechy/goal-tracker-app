@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import YouTube from "react-youtube";
-import "./YouTubePlayer.css"; // 👈 add this
+import "./YoutubePlayer.css";
 
 function YouTubePlayer() {
   const [url, setUrl] = useState("");
