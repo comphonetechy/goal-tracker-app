@@ -257,7 +257,7 @@ async function generateReward() {
 }
 
 // ------------------- SERVE REACT FRONTEND -------------------
-const CLIENT_BUILD_PATH = path.join(__dirname, '../client/dist'); // Vite build folder
+const CLIENT_BUILD_PATH = path.join(__dirname, '../client/build'); // CRA build folder
 app.use(express.static(CLIENT_BUILD_PATH));
 
 app.get('*', (req, res) => {
