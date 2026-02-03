@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001; // Render sets PORT automatically
 
 // Middleware
 app.use(cors());
@@ -79,7 +79,7 @@ async function initializeDataFiles() {
   }
 }
 
-// Helper functions for file operations
+// Helper functions
 async function readJSON(filePath) {
   const data = await fs.readFile(filePath, 'utf8');
   return JSON.parse(data);
@@ -89,7 +89,7 @@ async function writeJSON(filePath, data) {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 }
 
-// API Routes
+// ------------------- API ROUTES -------------------
 
 // Get all tasks
 app.get('/api/tasks', async (req, res) => {
@@ -142,19 +142,14 @@ app.put('/api/tasks/:id', async (req, res) => {
     const data = await readJSON(TASKS_FILE);
     const taskIndex = data.tasks.findIndex(t => t.id === req.params.id);
     
-    if (taskIndex === -1) {
-      return res.status(404).json({ error: 'Task not found' });
-    }
+    if (taskIndex === -1) return res.status(404).json({ error: 'Task not found' });
     
     const wasCompleted = data.tasks[taskIndex].completed;
     const updatedTask = { ...data.tasks[taskIndex], ...req.body };
     
-    // Check if task was just completed
     if (!wasCompleted && updatedTask.progress === 100 && !updatedTask.completed) {
       updatedTask.completed = true;
       updatedTask.completedAt = new Date().toISOString();
-      
-      // Generate reward
       const reward = await generateReward();
       updatedTask.reward = reward;
     }
@@ -179,7 +174,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
   }
 });
 
-// Get rewards data
+// Get rewards
 app.get('/api/rewards', async (req, res) => {
   try {
     const data = await readJSON(REWARDS_FILE);
@@ -189,17 +184,16 @@ app.get('/api/rewards', async (req, res) => {
   }
 });
 
-// Generate a random reward
+// Reward generation
 async function generateReward() {
   try {
     const rewardsData = await readJSON(REWARDS_FILE);
     const rewardPool = rewardsData.rewardPool;
-    
-    // Random reward type
+
     const types = ['points', 'message', 'badge', 'unlockable'];
-    const weights = [40, 30, 20, 10]; // Weighted probabilities
+    const weights = [40, 30, 20, 10];
     const random = Math.random() * 100;
-    
+
     let rewardType;
     let cumulative = 0;
     for (let i = 0; i < weights.length; i++) {
@@ -209,9 +203,9 @@ async function generateReward() {
         break;
       }
     }
-    
+
     let reward = { type: rewardType };
-    
+
     switch (rewardType) {
       case 'points':
         const points = Math.floor(Math.random() * 50) + 10;
@@ -219,51 +213,41 @@ async function generateReward() {
         reward.value = points;
         reward.message = `🎁 +${points} points!`;
         break;
-        
       case 'message':
-        const randomMessage = rewardPool.messages[Math.floor(Math.random() * rewardPool.messages.length)];
-        reward.message = randomMessage;
+        reward.message = rewardPool.messages[Math.floor(Math.random() * rewardPool.messages.length)];
         break;
-        
       case 'badge':
-        const availableBadges = rewardPool.badges.filter(
-          badge => !rewardsData.badges.includes(badge.id)
-        );
+        const availableBadges = rewardPool.badges.filter(b => !rewardsData.badges.includes(b.id));
         if (availableBadges.length > 0) {
           const badge = availableBadges[Math.floor(Math.random() * availableBadges.length)];
           rewardsData.badges.push(badge.id);
           reward.badge = badge;
           reward.message = `🏅 New badge unlocked: ${badge.name}!`;
         } else {
-          // Fallback to points if no badges available
-          const points = Math.floor(Math.random() * 50) + 10;
-          rewardsData.points += points;
+          const pts = Math.floor(Math.random() * 50) + 10;
+          rewardsData.points += pts;
           reward.type = 'points';
-          reward.value = points;
-          reward.message = `🎁 +${points} points!`;
+          reward.value = pts;
+          reward.message = `🎁 +${pts} points!`;
         }
         break;
-        
       case 'unlockable':
-        const availableUnlockables = rewardPool.unlockables.filter(
-          item => !rewardsData.unlockedRewards.includes(item.id)
-        );
+        const availableUnlockables = rewardPool.unlockables.filter(u => !rewardsData.unlockedRewards.includes(u.id));
         if (availableUnlockables.length > 0) {
           const unlockable = availableUnlockables[Math.floor(Math.random() * availableUnlockables.length)];
           rewardsData.unlockedRewards.push(unlockable.id);
           reward.unlockable = unlockable;
           reward.message = `🎊 Unlocked: ${unlockable.name}!`;
         } else {
-          // Fallback to points if no unlockables available
-          const points = Math.floor(Math.random() * 50) + 10;
-          rewardsData.points += points;
+          const pts = Math.floor(Math.random() * 50) + 10;
+          rewardsData.points += pts;
           reward.type = 'points';
-          reward.value = points;
-          reward.message = `🎁 +${points} points!`;
+          reward.value = pts;
+          reward.message = `🎁 +${pts} points!`;
         }
         break;
     }
-    
+
     await writeJSON(REWARDS_FILE, rewardsData);
     return reward;
   } catch (error) {
@@ -272,9 +256,17 @@ async function generateReward() {
   }
 }
 
-// Initialize and start server
+// ------------------- SERVE REACT FRONTEND -------------------
+const CLIENT_BUILD_PATH = path.join(__dirname, '../client/dist'); // Vite build folder
+app.use(express.static(CLIENT_BUILD_PATH));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(CLIENT_BUILD_PATH, 'index.html'));
+});
+
+// ------------------- START SERVER -------------------
 initializeDataFiles().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 });
