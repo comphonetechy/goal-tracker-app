@@ -7,7 +7,7 @@ import YouTubePlayer from './components/YoutubePlayer.jsx';
 import Pomodoro from './components/Pomodoro.jsx';
 import './App.css';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
 
 function App() {
   const [tasks, setTasks] = useState([]);
