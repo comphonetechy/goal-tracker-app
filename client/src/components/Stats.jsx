@@ -9,12 +9,12 @@ const Stats = ({ rewards, tasks }) => {
   const completedTasks = tasks.filter(t => t.completed).length;
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  const earnedBadges = rewards.badges.map(badgeId => 
-    rewards.rewardPool.badges.find(b => b.id === badgeId)
+  const earnedBadges = (rewards.badges || []).map(badgeId => 
+    (rewards.rewardPool?.badges || []).find(b => b.id === badgeId)
   ).filter(Boolean);
 
-  const unlockedItems = rewards.unlockedRewards.map(itemId =>
-    rewards.rewardPool.unlockables.find(u => u.id === itemId)
+  const unlockedItems = (rewards.unlockedRewards || []).map(itemId =>
+    (rewards.rewardPool?.unlockables || []).find(u => u.id === itemId)
   ).filter(Boolean);
 
   return (

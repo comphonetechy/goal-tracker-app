@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, get, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,79 +15,118 @@ const PORT = process.env.PORT || 3001; // Render sets PORT automatically
 app.use(cors());
 app.use(express.json());
 
-// Data file paths
-const DATA_DIR = path.join(__dirname, '../data');
-const TASKS_FILE = path.join(DATA_DIR, 'tasks.json');
-const REWARDS_FILE = path.join(DATA_DIR, 'rewards.json');
+// Initialize Firebase using provided web config
+const firebaseConfig = {
+  apiKey: "AIzaSyBs0CqFuhakRwGCG8zGEgxSiwwF3aO3mB4",
+  authDomain: "goaltrackerapp-371fc.firebaseapp.com",
+  databaseURL: "https://goaltrackerapp-371fc-default-rtdb.firebaseio.com",
+  projectId: "goaltrackerapp-371fc",
+  storageBucket: "goaltrackerapp-371fc.firebasestorage.app",
+  messagingSenderId: "223651168030",
+  appId: "1:223651168030:web:fc05ad7f755b3fe6d9d30f",
+  measurementId: "G-18QJY22BVF"
+};
 
-// Initialize data files if they don't exist
-async function initializeDataFiles() {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    
-    // Initialize tasks file
-    try {
-      await fs.access(TASKS_FILE);
-    } catch {
-      await fs.writeFile(TASKS_FILE, JSON.stringify({ tasks: [] }, null, 2));
+// Initialize Firebase
+const firebaseApp = initializeApp(firebaseConfig);
+const rdb = getDatabase(firebaseApp);
+
+// Default rewards structure helper
+function getDefaultRewards() {
+  return {
+    points: 0,
+    badges: [],
+    unlockedRewards: [],
+    rewardPool: {
+      messages: [
+        "🎉 Awesome work! You're crushing it!",
+        "💪 You're unstoppable today!",
+        "🌟 Legend! Keep the momentum going!",
+        "🚀 To the moon! Amazing progress!",
+        "🔥 On fire! Nothing can stop you now!",
+        "⚡ Electric performance! Keep it up!",
+        "🎯 Bullseye! You nailed it!",
+        "👑 Royalty! You deserve this win!",
+        "🏆 Champion mindset activated!",
+        "✨ Magic! You make it look easy!"
+      ],
+      badges: [
+        { id: 'first-win', name: 'First Victory', icon: '🥇', description: 'Complete your first task' },
+        { id: 'streak-3', name: '3-Day Streak', icon: '🔥', description: 'Complete tasks for 3 days in a row' },
+        { id: 'perfectionist', name: 'Perfectionist', icon: '💎', description: 'Complete 10 tasks at 100%' },
+        { id: 'early-bird', name: 'Early Bird', icon: '🌅', description: 'Complete a task before 9 AM' },
+        { id: 'night-owl', name: 'Night Owl', icon: '🦉', description: 'Complete a task after 9 PM' },
+        { id: 'speed-demon', name: 'Speed Demon', icon: '⚡', description: 'Complete 5 tasks in one day' },
+        { id: 'marathon', name: 'Marathon Runner', icon: '🏃', description: 'Complete 50 tasks total' },
+        { id: 'centurion', name: 'Centurion', icon: '💯', description: 'Reach 100 total points' }
+      ],
+      unlockables: [
+        { id: 'theme-1', name: 'Dark Mode', icon: '🌙', type: 'theme' },
+        { id: 'theme-2', name: 'Ocean Theme', icon: '🌊', type: 'theme' },
+        { id: 'theme-3', name: 'Forest Theme', icon: '🌲', type: 'theme' },
+        { id: 'avatar-1', name: 'Rocket Avatar', icon: '🚀', type: 'avatar' },
+        { id: 'avatar-2', name: 'Star Avatar', icon: '⭐', type: 'avatar' },
+        { id: 'title-1', name: 'Goal Crusher', icon: '💪', type: 'title' }
+      ]
     }
-    
-    // Initialize rewards file with default rewards
-    try {
-      await fs.access(REWARDS_FILE);
-    } catch {
-      const defaultRewards = {
-        points: 0,
-        badges: [],
-        unlockedRewards: [],
-        rewardPool: {
-          messages: [
-            "🎉 Awesome work! You're crushing it!",
-            "💪 You're unstoppable today!",
-            "🌟 Legend! Keep the momentum going!",
-            "🚀 To the moon! Amazing progress!",
-            "🔥 On fire! Nothing can stop you now!",
-            "⚡ Electric performance! Keep it up!",
-            "🎯 Bullseye! You nailed it!",
-            "👑 Royalty! You deserve this win!",
-            "🏆 Champion mindset activated!",
-            "✨ Magic! You make it look easy!"
-          ],
-          badges: [
-            { id: 'first-win', name: 'First Victory', icon: '🥇', description: 'Complete your first task' },
-            { id: 'streak-3', name: '3-Day Streak', icon: '🔥', description: 'Complete tasks for 3 days in a row' },
-            { id: 'perfectionist', name: 'Perfectionist', icon: '💎', description: 'Complete 10 tasks at 100%' },
-            { id: 'early-bird', name: 'Early Bird', icon: '🌅', description: 'Complete a task before 9 AM' },
-            { id: 'night-owl', name: 'Night Owl', icon: '🦉', description: 'Complete a task after 9 PM' },
-            { id: 'speed-demon', name: 'Speed Demon', icon: '⚡', description: 'Complete 5 tasks in one day' },
-            { id: 'marathon', name: 'Marathon Runner', icon: '🏃', description: 'Complete 50 tasks total' },
-            { id: 'centurion', name: 'Centurion', icon: '💯', description: 'Reach 100 total points' }
-          ],
-          unlockables: [
-            { id: 'theme-1', name: 'Dark Mode', icon: '🌙', type: 'theme' },
-            { id: 'theme-2', name: 'Ocean Theme', icon: '🌊', type: 'theme' },
-            { id: 'theme-3', name: 'Forest Theme', icon: '🌲', type: 'theme' },
-            { id: 'avatar-1', name: 'Rocket Avatar', icon: '🚀', type: 'avatar' },
-            { id: 'avatar-2', name: 'Star Avatar', icon: '⭐', type: 'avatar' },
-            { id: 'title-1', name: 'Goal Crusher', icon: '💪', type: 'title' }
-          ]
-        }
-      };
-      await fs.writeFile(REWARDS_FILE, JSON.stringify(defaultRewards, null, 2));
+  };
+}
+
+// Ensure rewards node exists in Realtime Database
+async function initializeRealtimeData() {
+  try {
+    const rewardsRef = ref(rdb, 'appData/rewards');
+    const rewardsSnap = await get(rewardsRef);
+    if (!rewardsSnap.exists()) {
+      await set(rewardsRef, getDefaultRewards());
     }
   } catch (error) {
-    console.error('Error initializing data files:', error);
+    console.error('Error initializing Realtime Database data:', error);
   }
 }
 
-// Helper functions
-async function readJSON(filePath) {
-  const data = await fs.readFile(filePath, 'utf8');
-  return JSON.parse(data);
+// Helper functions (Realtime Database)
+async function getAllTasks() {
+  const snap = await get(ref(rdb, 'tasks'));
+  const val = snap.exists() ? snap.val() : {};
+  return Object.values(val);
 }
 
-async function writeJSON(filePath, data) {
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+async function getTasksByDate(date) {
+  const q = query(ref(rdb, 'tasks'), orderByChild('date'), equalTo(date));
+  const snap = await get(q);
+  const val = snap.exists() ? snap.val() : {};
+  return Object.values(val);
+}
+
+async function createTask(task) {
+  await set(ref(rdb, `tasks/${task.id}`), task);
+}
+
+async function getTaskById(id) {
+  const snap = await get(ref(rdb, `tasks/${id}`));
+  return snap.exists() ? snap.val() : null;
+}
+
+async function setTaskById(id, task) {
+  await set(ref(rdb, `tasks/${id}`), task);
+}
+
+async function deleteTaskById(id) {
+  await remove(ref(rdb, `tasks/${id}`));
+}
+
+async function getRewardsData() {
+  const snap = await get(ref(rdb, 'appData/rewards'));
+  return snap.exists() ? snap.val() : null;
+}
+
+async function setRewardsData(data) {
+  await set(ref(rdb, 'appData/rewards'), data);
+}
+
+async function updateRewardsData(partial) {
+  await update(ref(rdb, 'appData/rewards'), partial);
 }
 
 // ------------------- API ROUTES -------------------
@@ -94,8 +134,8 @@ async function writeJSON(filePath, data) {
 // Get all tasks
 app.get('/api/tasks', async (req, res) => {
   try {
-    const data = await readJSON(TASKS_FILE);
-    res.json(data.tasks);
+    const tasks = await getAllTasks();
+    res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: 'Failed to read tasks' });
   }
@@ -104,8 +144,7 @@ app.get('/api/tasks', async (req, res) => {
 // Get tasks for a specific date
 app.get('/api/tasks/:date', async (req, res) => {
   try {
-    const data = await readJSON(TASKS_FILE);
-    const dateTasks = data.tasks.filter(task => task.date === req.params.date);
+    const dateTasks = await getTasksByDate(req.params.date);
     res.json(dateTasks);
   } catch (error) {
     res.status(500).json({ error: 'Failed to read tasks' });
@@ -115,7 +154,6 @@ app.get('/api/tasks/:date', async (req, res) => {
 // Create a new task
 app.post('/api/tasks', async (req, res) => {
   try {
-    const data = await readJSON(TASKS_FILE);
     const newTask = {
       id: Date.now().toString(),
       title: req.body.title,
@@ -128,8 +166,7 @@ app.post('/api/tasks', async (req, res) => {
       createdAt: new Date().toISOString(),
       completed: false
     };
-    data.tasks.push(newTask);
-    await writeJSON(TASKS_FILE, data);
+    await createTask(newTask);
     res.status(201).json(newTask);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create task' });
@@ -139,23 +176,20 @@ app.post('/api/tasks', async (req, res) => {
 // Update a task
 app.put('/api/tasks/:id', async (req, res) => {
   try {
-    const data = await readJSON(TASKS_FILE);
-    const taskIndex = data.tasks.findIndex(t => t.id === req.params.id);
-    
-    if (taskIndex === -1) return res.status(404).json({ error: 'Task not found' });
-    
-    const wasCompleted = data.tasks[taskIndex].completed;
-    const updatedTask = { ...data.tasks[taskIndex], ...req.body };
-    
+    const existing = await getTaskById(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Task not found' });
+
+    const wasCompleted = existing.completed;
+    const updatedTask = { ...existing, ...req.body };
+
     if (!wasCompleted && updatedTask.progress === 100 && !updatedTask.completed) {
       updatedTask.completed = true;
       updatedTask.completedAt = new Date().toISOString();
       const reward = await generateReward();
       updatedTask.reward = reward;
     }
-    
-    data.tasks[taskIndex] = updatedTask;
-    await writeJSON(TASKS_FILE, data);
+
+    await setTaskById(req.params.id, updatedTask);
     res.json(updatedTask);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update task' });
@@ -165,9 +199,7 @@ app.put('/api/tasks/:id', async (req, res) => {
 // Delete a task
 app.delete('/api/tasks/:id', async (req, res) => {
   try {
-    const data = await readJSON(TASKS_FILE);
-    data.tasks = data.tasks.filter(t => t.id !== req.params.id);
-    await writeJSON(TASKS_FILE, data);
+    await deleteTaskById(req.params.id);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete task' });
@@ -177,7 +209,11 @@ app.delete('/api/tasks/:id', async (req, res) => {
 // Get rewards
 app.get('/api/rewards', async (req, res) => {
   try {
-    const data = await readJSON(REWARDS_FILE);
+    let data = await getRewardsData();
+    if (!data) {
+      data = getDefaultRewards();
+      await setRewardsData(data);
+    }
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to read rewards' });
@@ -187,8 +223,8 @@ app.get('/api/rewards', async (req, res) => {
 // Reward generation
 async function generateReward() {
   try {
-    const rewardsData = await readJSON(REWARDS_FILE);
-    const rewardPool = rewardsData.rewardPool;
+    const rewardsData = (await getRewardsData()) || getDefaultRewards();
+    const rewardPool = rewardsData.rewardPool || getDefaultRewards().rewardPool;
 
     const types = ['points', 'message', 'badge', 'unlockable'];
     const weights = [40, 30, 20, 10];
@@ -248,7 +284,7 @@ async function generateReward() {
         break;
     }
 
-    await writeJSON(REWARDS_FILE, rewardsData);
+    await setRewardsData(rewardsData);
     return reward;
   } catch (error) {
     console.error('Error generating reward:', error);
@@ -265,7 +301,7 @@ app.get('*', (req, res) => {
 });
 
 // ------------------- START SERVER -------------------
-initializeDataFiles().then(() => {
+initializeRealtimeData().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
