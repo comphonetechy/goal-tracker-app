@@ -20,12 +20,21 @@ const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || path.jo
 let adminInitialized = false;
 
 try {
-  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // Preferred: full service account JSON in an env var (Render secret)
+    const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    admin.initializeApp({
+      credential: admin.credential.cert(sa),
+      databaseURL: 'https://goaltrackerapp-371fc-default-rtdb.firebaseio.com'
+    });
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Application default credentials (e.g., set by platform)
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
       databaseURL: 'https://goaltrackerapp-371fc-default-rtdb.firebaseio.com'
     });
   } else {
+    // Fallback: read local file (only for dev)
     const sa = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
     admin.initializeApp({
       credential: admin.credential.cert(sa),
