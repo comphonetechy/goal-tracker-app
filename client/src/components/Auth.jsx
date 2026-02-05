@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import React, { useState, useRef } from 'react';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase';
 import './Auth.css';
 
@@ -8,6 +8,22 @@ const Auth = ({ user }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isSigningUp, setIsSigningUp] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+
+const togglePasswordReset = () => {
+  setShowPasswordReset(!showPasswordReset);
+}
+const sendPasswordResetEmailHandler = async (auth, email) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset email sent!");
+    setShowPasswordReset(false);
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    alert("Error sending password reset email.");
+  }
+}
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,14 +67,19 @@ const Auth = ({ user }) => {
   return (
     <div className="auth-form">
       <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <input type="email" placeholder="Email" value={email}  onChange={e => setEmail(e.target.value)} required />
+        <input type="password" hidden={showPasswordReset} name='password' placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
         <div className="auth-actions">
-          <button type="submit" className="auth-btn">{isSigningUp ? 'Sign up' : 'Sign in'}</button>
-          <button type="button" className="auth-toggle" onClick={() => setIsSigningUp(s => !s)}>
+          <button type="submit" className="auth-btn" hidden={showPasswordReset}>{isSigningUp ? 'Sign up' : 'Sign in'}</button>
+          <button type="button" hidden={showPasswordReset}  className="auth-toggle" onClick={() => setIsSigningUp(s => !s)}>
             {isSigningUp ? 'Have an account? Sign in' : "Don't have one? Sign up"}
-          </button>
+            </button>
+            
         </div>
+         <button type="button" onClick={togglePasswordReset}>{showPasswordReset ? 'Back to Login' : 'Forgot Password?'}</button>
+         {showPasswordReset && <>
+         <button type='button' name='resetsentbutton' onClick={() => sendPasswordResetEmailHandler(auth, email)}>Send Reset Email</button>
+         </>}
         {error && <div className="auth-error">{error}</div>}
       </form>
     </div>
