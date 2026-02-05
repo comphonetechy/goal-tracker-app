@@ -4,6 +4,7 @@ import Calendar from './components/Calendar.jsx';
 import TaskPanel from './components/TaskPanel.jsx';
 import Stats from './components/Stats';
 import YouTubePlayer from './components/YoutubePlayer.jsx';
+import Pomodoro from './components/Pomodoro.jsx';
 import './App.css';
 
 const API_BASE = 'http://localhost:3001/api';
@@ -110,7 +111,7 @@ function App() {
   return (
     <div className="app">
       <div className="grid-bg" />
-      
+      <Pomodoro />
       <motion.header 
         className="app-header"
         initial={{ opacity: 0, y: -50 }}
