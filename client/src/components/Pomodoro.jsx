@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
 const Pomodoro = () => {
-  const WORK_TIME = 25 * 60;
-  const SHORT_BREAK = 5 * 60;
-  const LONG_BREAK = 15 * 60;
+  const [workTime, setWorkTime] = useState(25);
+  const [shortBreak, setShortBreak] = useState(5);
+  const [longBreak, setLongBreak] = useState(15);
 
   const [mode, setMode] = useState("work"); // work | short | long
-  const [time, setTime] = useState(WORK_TIME);
+  const [time, setTime] = useState(workTime * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
 
@@ -25,45 +25,57 @@ const Pomodoro = () => {
     return () => clearInterval(timer);
   }, [isRunning, time]);
 
+  useEffect(() => {
+    if (mode === "work") setTime(workTime * 60);
+    if (mode === "short") setTime(shortBreak * 60);
+    if (mode === "long") setTime(longBreak * 60);
+  }, [workTime, shortBreak, longBreak, mode]);
+
   const handleSessionEnd = () => {
     setIsRunning(false);
 
     if (mode === "work") {
-      const nextSession = sessionCount + 1;
-      setSessionCount(nextSession);
+      const next = sessionCount + 1;
+      setSessionCount(next);
 
-      if (nextSession % 4 === 0) {
+      if (next % 4 === 0) {
         setMode("long");
-        setTime(LONG_BREAK);
+        setTime(longBreak * 60);
       } else {
         setMode("short");
-        setTime(SHORT_BREAK);
+        setTime(shortBreak * 60);
       }
     } else {
       setMode("work");
-      setTime(WORK_TIME);
+      setTime(workTime * 60);
     }
   };
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    return `${m.toString().padStart(2, "0")}:${s
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const totalTime =
-    mode === "work" ? WORK_TIME : mode === "short" ? SHORT_BREAK : LONG_BREAK;
+    mode === "work"
+      ? workTime * 60
+      : mode === "short"
+      ? shortBreak * 60
+      : longBreak * 60;
 
   const progress = ((totalTime - time) / totalTime) * 100;
 
   return (
     <div style={styles.container(mode)}>
-      <h1 style={styles.title}>Pomodoro</h1>
+      <h1>Pomodoro</h1>
 
       <div style={styles.modeRow}>
-        <span style={mode === "work" ? styles.activeMode : styles.mode}>Pomodoro</span>
-        <span style={mode === "short" ? styles.activeMode : styles.mode}>Short Break</span>
-        <span style={mode === "long" ? styles.activeMode : styles.mode}>Long Break</span>
+        <span style={mode === "work" ? styles.active : styles.mode}>Pomodoro</span>
+        <span style={mode === "short" ? styles.active : styles.mode}>Short Break</span>
+        <span style={mode === "long" ? styles.active : styles.mode}>Long Break</span>
       </div>
 
       <div style={styles.timer}>{formatTime(time)}</div>
@@ -76,16 +88,22 @@ const Pomodoro = () => {
         {isRunning ? "PAUSE" : "START"}
       </button>
 
-      <button style={styles.resetButton} onClick={() => {
-        setIsRunning(false);
-        setMode("work");
-        setTime(WORK_TIME);
-        setSessionCount(0);
-      }}>
-        Reset
-      </button>
+      <div style={styles.settings}>
+        <label>
+          Work:
+          <input type="number" value={workTime} min="1" onChange={(e) => setWorkTime(+e.target.value)} /> min
+        </label>
+        <label>
+          Short:
+          <input type="number" value={shortBreak} min="1" onChange={(e) => setShortBreak(+e.target.value)} /> min
+        </label>
+        <label>
+          Long:
+          <input type="number" value={longBreak} min="1" onChange={(e) => setLongBreak(+e.target.value)} /> min
+        </label>
+      </div>
 
-      <p style={styles.sessionText}>#{sessionCount + 1}</p>
+      <p>#{sessionCount + 1}</p>
     </div>
   );
 };
@@ -104,62 +122,16 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     color: "#fff",
-    fontFamily: "Arial, sans-serif",
+    fontFamily: "Arial",
   }),
-  title: {
-    fontSize: "2rem",
-    marginBottom: "10px",
-  },
-  modeRow: {
-    display: "flex",
-    gap: "15px",
-    marginBottom: "30px",
-  },
-  mode: {
-    opacity: 0.6,
-  },
-  activeMode: {
-    fontWeight: "bold",
-    textDecoration: "underline",
-  },
-  timer: {
-    fontSize: "6rem",
-    fontWeight: "bold",
-    marginBottom: "20px",
-  },
-  progressBar: {
-    width: "300px",
-    height: "8px",
-    background: "rgba(255,255,255,0.3)",
-    borderRadius: "5px",
-    marginBottom: "30px",
-  },
-  progressFill: {
-    height: "100%",
-    background: "#fff",
-    borderRadius: "5px",
-  },
-  mainButton: {
-    padding: "15px 60px",
-    fontSize: "1.2rem",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    marginBottom: "10px",
-    background: "#fff",
-    color: "#333",
-  },
-  resetButton: {
-    background: "transparent",
-    border: "none",
-    color: "#fff",
-    cursor: "pointer",
-    marginTop: "10px",
-  },
-  sessionText: {
-    marginTop: "20px",
-    opacity: 0.7,
-  },
+  modeRow: { display: "flex", gap: "15px", marginBottom: "20px" },
+  mode: { opacity: 0.6 },
+  active: { fontWeight: "bold", textDecoration: "underline" },
+  timer: { fontSize: "6rem", marginBottom: "20px" },
+  progressBar: { width: "300px", height: "8px", background: "rgba(255,255,255,.3)", marginBottom: "20px" },
+  progressFill: { height: "100%", background: "#fff" },
+  mainButton: { padding: "12px 50px", fontSize: "1.2rem", borderRadius: "8px", border: "none", cursor: "pointer" },
+  settings: { display: "flex", gap: "10px", marginTop: "20px" }
 };
 
 export default Pomodoro;
