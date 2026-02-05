@@ -110,7 +110,7 @@ const Pomodoro = () => {
 
 const styles = {
   container: (mode) => ({
-    height: "100vh",
+    height: "10%",
     background:
       mode === "work"
         ? "#d95550"
